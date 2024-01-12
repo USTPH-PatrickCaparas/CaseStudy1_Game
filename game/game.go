@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var Line string = "-------------------------------------"
@@ -83,21 +84,59 @@ func inputChoice(inputUsage string) (int, error) {
 	}
 }
 
+func inputFilter(choice int) {
+	for {
+		fmt.Print("Input Search:")
+		reader := bufio.NewReader(os.Stdin)
+		word, err := reader.ReadString('\n')
+		word = strings.TrimSpace(word)
+
+		if err != nil {
+			fmt.Println("Invalid Word inputted")
+		} else {
+			switch choice {
+			case 1:
+				game, err := FilterByTitle(word)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					OutputFormatter(game)
+				}
+				filterGame()
+			case 2:
+				games, err := FilterByGenre(word)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					OutputFormatter(games)
+				}
+				filterGame()
+			case 3:
+				InitializeGame()
+			default:
+				fmt.Println("Invalid Input")
+			}
+			break
+		}
+	}
+}
 func inputGame() {
 
 	//bufio to read the full line
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Title: ")
+		fmt.Print("Title: ")
 		title, errTitle := reader.ReadString('\n')
-		fmt.Println("Description: ")
+		fmt.Print("Description: ")
 		description, errDesc := reader.ReadString('\n')
-		fmt.Println("Genre: ")
+		fmt.Print("Genre: ")
 		genre, errGenre := reader.ReadString('\n')
-		fmt.Println("Price: ")
+		fmt.Print("Price: ")
 		price, errPrice := reader.ReadString('\n')
-		fmt.Println("Stocks: ")
+		price = strings.TrimSpace(price)
+		fmt.Print("Stocks: ")
 		stocks, errStocks := reader.ReadString('\n')
+		stocks = strings.TrimSpace(stocks)
 
 		if errTitle != nil {
 			fmt.Println("Invalid Title")
@@ -114,17 +153,17 @@ func inputGame() {
 			stocksInt, errStocksInt := strconv.ParseUint(stocks, 10, 64)
 
 			if errPriceFloat != nil {
-				fmt.Printf("Invalid price number format\n")
+				fmt.Printf("%v", errPriceFloat)
 			} else if errStocksInt != nil {
-				fmt.Println("Invalid stocks number format\n")
+				fmt.Printf("%v", errStocksInt)
+			} else if priceFloat < 1 {
+				fmt.Printf("Invalid Price")
+			} else if stocksInt < 1 {
+				fmt.Println("Invalid Stocks")
 			} else {
-				newGame := &Game{
-					Title:       title,
-					Description: description,
-					Genre:       genre,
-					Price:       priceFloat,
-					Stocks:      uint(stocksInt),
-				}
+				AddGame(title, description, genre, priceFloat, stocksInt)
+				InitializeGame()
+				break
 			}
 		}
 
@@ -164,10 +203,34 @@ func sortGames() {
 }
 
 func filterGame() {
+	var choice string
+	for {
+		fmt.Print(Line,
+			"\nSort By:", newLine,
+			"[1] Title", newLine,
+			"[2] Genre", newLine,
+			"[3] Exit", newLine,
+		)
+		fmt.Println(Line)
+		fmt.Print("Enter Choice: ")
+		fmt.Scanf("%v \n", &choice)
+		choiceInt, err := strconv.ParseInt(choice, 10, 64)
+		if err != nil {
+			fmt.Println("Invalid Input")
+			filterGame()
+			break
+		} else if choiceInt == 3 {
+			InitializeGame()
+		} else {
+			inputFilter(int(choiceInt))
+			break
+		}
+	}
 
 }
 
 func deleteGame() {
+	//input id then call to the delete method
 }
 
 func addGame() {
@@ -175,5 +238,5 @@ func addGame() {
 }
 
 func updateGame() {
-
+	inputGame()
 }

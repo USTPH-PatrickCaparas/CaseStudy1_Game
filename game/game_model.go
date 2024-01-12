@@ -5,7 +5,7 @@ type Game struct {
 	Description string
 	Genre       string
 	Price       float64
-	Stocks      uint
+	Stocks      uint64
 }
 
 var Games = map[int]Game{

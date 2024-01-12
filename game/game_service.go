@@ -37,7 +37,7 @@ func UpdateGame(id int, newGame Game) (Game, error) {
 }
 
 // VALIDATION NALANGS
-func AddGame(title string, description string, genre string, price float64, stocks uint) {
+func AddGame(title string, description string, genre string, price float64, stocks uint64) {
 	newGame := &Game{
 		Title:       title,
 		Description: description,
@@ -47,7 +47,6 @@ func AddGame(title string, description string, genre string, price float64, stoc
 	}
 	id := len(Games) + 1
 	Games[id] = *newGame
-	DisplayAllGames()
 }
 
 // Delete the Game From Input title or genre
@@ -72,19 +71,19 @@ func FilterById(id int) (Game, error) {
 }
 
 // Return list of Games if Genre is Found else not found
-func FilterByGenre(genre string) ([]Game, error) {
+func FilterByGenre(genre string) (map[int]Game, error) {
 	genre = TrimSpaces(genre)
-	var listOfGames []Game
+	listOfGamesByGenre := make(map[int]Game, len(Games))
 
-	for _, game := range Games {
+	for id, game := range Games {
 		game.Genre = TrimSpaces(game.Genre)
 		if strings.EqualFold(game.Genre, genre) {
-			listOfGames = append(listOfGames, game)
+			listOfGamesByGenre[id] = game
 		}
 	}
 
-	if len(listOfGames) > 0 {
-		return listOfGames, nil
+	if len(listOfGamesByGenre) > 0 {
+		return listOfGamesByGenre, nil
 	} else {
 		return nil, fmt.Errorf("no games found with genre %s", genre)
 	}
@@ -92,19 +91,19 @@ func FilterByGenre(genre string) ([]Game, error) {
 
 // NAGANA KANA HANGGANG DITO
 // Return A single Game when Found
-func FilterByTitle(title string) (Game, error) {
+func FilterByTitle(title string) (map[int]Game, error) {
 	title = TrimSpaces(title)
-	var filteredGame Game
+	gameByTitle := make(map[int]Game, 1)
 
-	for _, game := range Games {
+	for id, game := range Games {
 		game.Title = TrimSpaces(game.Title)
 		if strings.EqualFold(game.Title, title) {
-			filteredGame = game
-			return filteredGame, nil
+			gameByTitle[id] = game
+			return gameByTitle, nil
 		}
 	}
 
-	return Game{}, fmt.Errorf("no game found with title %s", title)
+	return nil, fmt.Errorf("no game found with title %s", title)
 }
 
 func SortGameByPriceOrStocks(priceOrStocks string) map[int]Game {
