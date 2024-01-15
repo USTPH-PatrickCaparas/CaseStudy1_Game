@@ -9,7 +9,7 @@ import (
 
 // Update Game
 // need to update price, stocks, title and genre
-func UpdateGame(id int, newGame Game) (Game, error) {
+func UpdateGame(id int, newGame *Game) (Game, error) {
 	game, err := FilterById(id)
 	fmt.Println(err)
 
@@ -33,7 +33,7 @@ func UpdateGame(id int, newGame Game) (Game, error) {
 		return Game{}, fmt.Errorf("no game found with id %d", id)
 	}
 
-	return newGame, nil
+	return *newGame, nil
 }
 
 // VALIDATION NALANGS

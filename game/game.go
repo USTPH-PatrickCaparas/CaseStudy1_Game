@@ -120,7 +120,7 @@ func inputFilter(choice int) {
 		}
 	}
 }
-func inputGame() {
+func inputGame() *Game {
 
 	//bufio to read the full line
 	reader := bufio.NewReader(os.Stdin)
@@ -161,9 +161,8 @@ func inputGame() {
 			} else if stocksInt < 1 {
 				fmt.Println("Invalid Stocks")
 			} else {
-				AddGame(title, description, genre, priceFloat, stocksInt)
-				InitializeGame()
-				break
+				newGame := &Game{title, description, genre, priceFloat, stocksInt}
+				return newGame
 			}
 		}
 
@@ -234,9 +233,21 @@ func deleteGame() {
 }
 
 func addGame() {
-	inputGame()
+	game := inputGame()
+	AddGame(game.Title, game.Description, game.Genre, inputGame().Price, game.Stocks)
+	InitializeGame()
 }
 
 func updateGame() {
-	inputGame()
+	var id string
+	fmt.Print("Input Id: ")
+	fmt.Scanf("%v \n", &id)
+	choiceInt, err := strconv.ParseInt(id, 10, 64)
+	newChoice := int(choiceInt)
+	if err != nil {
+		fmt.Println("Invalid Id")
+	}
+	game := inputGame()
+
+	newGame, err := UpdateGame(newChoice, game)
 }
